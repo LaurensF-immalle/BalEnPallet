@@ -14,7 +14,7 @@ int tellerLinks = 0;
 int breedtePallet = 10;
 int lengtePallet = 50;
 
-int xPalletinks = 25;
+int xPalletLinks = 25;
 int xPalletRechts = 1175;
 int yPalletLinks = 250;
 int yPalletRechts = 250;
@@ -47,6 +47,9 @@ void draw()
   fill(0, 255, 0);
   stroke(0, 255, 0);
 
+  rect(xPalletLinks, yPalletLinks, breedtePallet, lengtePallet);
+  rect(xPalletRechts, yPalletRechts, breedtePallet, lengtePallet);
+
   tekenLijnen();
 
   switch(gameMode)
@@ -54,10 +57,20 @@ void draw()
   case StartScreen:
     StartScreen();
     break;
-
-  case Playing:
+  
+  case Single:
     balletje();
-    palletje();
+    pallet1();
+    palletPC();
+    botsDetectie();
+    puntenTeller();
+    Winner();
+  break;
+
+  case Multi:
+    balletje();
+    pallet1();
+    pallet2();
     botsDetectie();
     puntenTeller();
     Winner();
@@ -79,11 +92,17 @@ void newGame() {
 
 void StartScreen()
 {  
-  text("Druk 'g' voor te starten", width/2 -100, height/2-50);
-
-  if (keyPressed && key == 'g')
+  text("Druk 's' voor 1 player", width/2 -100, height/2-50);
+  text("Druk 'm' voor 2 players", width/2 -100, height/2-20);
+  
+  if (keyPressed && key == 's')
   {
-    gameMode = GameMode.Playing;
+    gameMode = GameMode.Single;
+  }
+
+  if (keyPressed && key == 'm')
+  {
+    gameMode = GameMode.Multi;
   }
 }
 
@@ -141,23 +160,8 @@ void balletje()
   ypos = ypos + ( yspeed * ydirection );
 }
 
-void palletje()
+void pallet1()
 {
-  rect(xPalletinks, yPalletLinks, breedtePallet, lengtePallet);
-  rect(xPalletRechts, yPalletRechts, breedtePallet, lengtePallet);
-
-  if (keyPressed && key == 'a')
-  {
-    if (yPalletLinks>0) {
-    yPalletLinks -= beweegSnelheidPallet;
-    }
-  } else if (keyPressed && key  == 'q')
-  {
-    if (yPalletLinks<600-lengtePallet) {
-      yPalletLinks += beweegSnelheidPallet;
-    }
-  }
-
   if (mousePressed && mouseButton == LEFT  )
   {
     if (yPalletRechts>0) {
@@ -171,15 +175,33 @@ void palletje()
   }
 }
 
+void pallet2()
+{
+  if (keyPressed && key == 'a')
+  {
+    if (yPalletLinks>0) {
+    yPalletLinks -= beweegSnelheidPallet;
+    }
+  } else if (keyPressed && key  == 'q')
+  {
+    if (yPalletLinks<600-lengtePallet) {
+      yPalletLinks += beweegSnelheidPallet;
+    }
+  }
+}
 
+void palletPC()
+{
+  yPalletLinks = int(ypos-lengtePallet/2);
+}
 void botsDetectie()
 {
   if (ypos > height-rad || ypos < rad) {
     ydirection *= -1;
   }
 
-  if (xpos > xPalletinks + rad 
-    && xpos < xPalletinks + (rad+breedtePallet) 
+  if (xpos > xPalletLinks + rad 
+    && xpos < xPalletLinks + (rad+breedtePallet) 
     && ypos > yPalletLinks 
     && ypos < yPalletLinks + lengtePallet)
   {
