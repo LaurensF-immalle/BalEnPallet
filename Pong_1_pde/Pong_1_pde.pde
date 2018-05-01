@@ -8,7 +8,6 @@ float yspeed = 4.9;
 int xdirection = 1;  
 int ydirection = 1;  
 
-boolean teller = false;
 int tellerRechts = 0;
 int tellerLinks = 0;
 
@@ -20,7 +19,7 @@ int xPalletRechts = 1175;
 int yPalletLinks = 250;
 int yPalletRechts = 250;
 
-int beweegSnelheidPallet = 6;
+int beweegSnelheidPallet = 10;
 
 void setup() 
 {
@@ -61,8 +60,9 @@ void draw()
     palletje();
     botsDetectie();
     puntenTeller();
-    Win();
+    Winner();
     break;
+    
   case WinScreen:
     WinScreen();
     break;
@@ -89,6 +89,16 @@ void StartScreen()
 
 void WinScreen()
 {  
+  if (tellerLinks == 5)
+  { 
+     text("Profciat, Links is gewonnen", width/2 - 200, height/2-50);
+  } 
+  
+   if (tellerRechts == 5)
+  {
+     text("Profciat, Rechts is gewonnen", width/2 - 200, height/2-70);
+  }
+  
   text("Druk 'x' om naar starscherm te gaan", width/2 - 200, height/2);
 
   if (keyPressed && key == 'x')
@@ -99,12 +109,12 @@ void WinScreen()
   }
 }
 
-void Win()
+void Winner()
 {
-  if (tellerLinks == 20)
+  if (tellerLinks == 5)
   { 
     gameMode = GameMode.WinScreen;
-  } else if (tellerRechts == 20)
+  } else if (tellerRechts == 5)
   {
     gameMode = GameMode.WinScreen;
   }
@@ -114,22 +124,14 @@ void puntenTeller()
 {
   if (xpos > width-rad) 
   {
-    if (teller == true)
-    {
       tellerLinks += 1;
-      teller = false;
-    }
-    newGame();
+      newGame();
   }
 
   if (xpos < rad) 
   {
-    if (teller == true)
-    {
       tellerRechts += 1;
-      teller = false;
-    }
-    newGame();
+      newGame();
   }
 }
 
