@@ -1,3 +1,6 @@
+
+
+
 GameMode gameMode = GameMode.StartScreen;
 int rad = 5;        
 float xpos, ypos;
@@ -35,54 +38,48 @@ void draw()
 {
   background(120);
 
-  noStroke();
-  fill(255);
-  ellipse(xpos, ypos, rad, rad);
-
-  textSize(20);
-  fill(1);
-  text(tellerLinks, 70, 50);
-  text(tellerRechts, width - 70, 50);
-
-  fill(0, 255, 0);
-  stroke(0, 255, 0);
-
-  rect(xPalletLinks, yPalletLinks, breedtePallet, lengtePallet);
-  rect(xPalletRechts, yPalletRechts, breedtePallet, lengtePallet);
-
-  tekenLijnen();
 
   switch(gameMode)
   {
   case StartScreen:
-    StartScreen();
+    showInstructions();
+    tekenStartScreen();
+    tekenStartPos();
     break;
   
-  case Single:
-    balletje();
-    pallet1();
-    palletPC();
-    botsDetectie();
-    puntenTeller();
-    Winner();
+  case Single:    
+    tekenLijnen();
+    plaatsTeller();
+    updateBal();
+    beweegPallet1();
+    beweegPalletPC();
+    berekenBotsDetectie();
+    drawEllipse();
+    drawPalletjes();
+    berekenPunten();
+    berekenWinner();
   break;
 
   case Multi:
-    balletje();
-    pallet1();
-    pallet2();
-    botsDetectie();
-    puntenTeller();
-    Winner();
+    tekenLijnen();
+    plaatsTeller();
+    updateBal();
+    beweegPallet1();
+    beweegPallet2();
+    berekenBotsDetectie();
+    drawEllipse();pen 
+    drawPalletjes();
+    berekenPunten();
+    berekenWinner();
     break;
     
   case WinScreen:
-    WinScreen();
+    tekenWinScreen();
     break;
   }
 }
 
-void newGame() {
+void startNewGame() {
   xpos = width / 2;
   ypos = random(rad, height-rad);
   
@@ -90,8 +87,17 @@ void newGame() {
   yspeed = 3;
 }
 
-void StartScreen()
+void showInstructions()
+{
+  textSize(20);
+  fill(255,0,0);
+  text("Bestuur links met 'a' en 'q'.", 20,580);
+  text("Bestuur rechts met muis links en rechts te klikken.", 700,580);
+}
+
+void tekenStartScreen()
 {  
+  fill(0, 255, 0);
   text("Druk 's' voor 1 player", width/2 -100, height/2-50);
   text("Druk 'm' voor 2 players", width/2 -100, height/2-20);
   
@@ -106,7 +112,31 @@ void StartScreen()
   }
 }
 
-void WinScreen()
+void drawEllipse()
+{
+  noStroke();
+  fill(255);
+  ellipse(xpos, ypos, rad, rad);
+}
+
+void drawPalletjes()
+{
+  fill(0,255,0);
+  stroke(0,255,0);
+  rect(xPalletLinks,yPalletLinks,breedtePallet,lengtePallet);
+  rect(xPalletRechts,yPalletRechts,breedtePallet,lengtePallet);
+}
+
+void plaatsTeller()
+{
+  textSize(20);
+  fill(1);
+  text(tellerLinks, 70, 50);
+  text(tellerRechts, width - 70, 50);
+}
+
+
+void tekenWinScreen()
 {  
   if (tellerLinks == 5)
   { 
@@ -128,7 +158,7 @@ void WinScreen()
   }
 }
 
-void Winner()
+void berekenWinner()
 {
   if (tellerLinks == 5)
   { 
@@ -139,28 +169,28 @@ void Winner()
   }
 }
 
-void puntenTeller()
+void berekenPunten()
 {
   if (xpos > width-rad) 
   {
       tellerLinks += 1;
-      newGame();
+      startNewGame();
   }
 
   if (xpos < rad) 
   {
       tellerRechts += 1;
-      newGame();
+      startNewGame();
   }
 }
 
-void balletje()
+void updateBal()
 {
   xpos = xpos + ( xspeed * xdirection );
   ypos = ypos + ( yspeed * ydirection );
 }
 
-void pallet1()
+void beweegPallet1()
 {
   if (mousePressed && mouseButton == LEFT  )
   {
@@ -175,7 +205,7 @@ void pallet1()
   }
 }
 
-void pallet2()
+void beweegPallet2()
 {
   if (keyPressed && key == 'a')
   {
@@ -190,31 +220,32 @@ void pallet2()
   }
 }
 
-void palletPC()
+void beweegPalletPC()
 {
   yPalletLinks = int(ypos-lengtePallet/2);
+  //yPalletRechts = int(ypos-(lengtePallet/2));
 }
-void botsDetectie()
+void berekenBotsDetectie()
 {
   if (ypos > height-rad || ypos < rad) {
     ydirection *= -1;
   }
 
-  if (xpos > xPalletLinks + rad 
+  if (xpos > xPalletLinks + rad  - 10
     && xpos < xPalletLinks + (rad+breedtePallet) 
-    && ypos > yPalletLinks 
+    && ypos > yPalletLinks + 10
     && ypos < yPalletLinks + lengtePallet)
   {
     xdirection *= -1;
-    randomSpeed();
+    berekenRandomSpeed();
   }
-  if (xpos > xPalletRechts -rad 
+  if (xpos > xPalletRechts -rad -5
     && xpos < xPalletRechts - (rad-breedtePallet)
-    && ypos > yPalletRechts 
+    && ypos > yPalletRechts +5
     && ypos < yPalletRechts + lengtePallet)
   {
     xdirection *= -1;
-    randomSpeed();
+    berekenRandomSpeed();
   }
 }
 
@@ -226,8 +257,23 @@ void tekenLijnen()
   }
 }
 
-void randomSpeed()
+void berekenRandomSpeed()
 {
   xspeed = random(3,10);
   yspeed = random(3,10);
+}
+void tekenStartPos()
+{
+   xPalletLinks = 25;
+   xPalletRechts = 1160;
+   yPalletLinks = height/2;
+   yPalletRechts = height/2;
+}
+
+enum GameMode
+{
+  StartScreen,
+  Single,
+  Multi,
+  WinScreen
 }
